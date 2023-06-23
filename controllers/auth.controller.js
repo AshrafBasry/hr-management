@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user.model');
 const jwtUtil = require('../utils/jwt');
+const cache = require("../utils/cache");
 
 exports.register = async (req, res) => {
   const validateEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -44,4 +45,9 @@ exports.login = async (req, res) => {
   }
 
   return res.status(400).json({ message: 'Unauthorized.' });
+}
+
+exports.logout = async (req, res) => {    
+  await cache.set(req.token, req.token);  
+  return res.json({ message: 'Logged out successfully.' });
 }

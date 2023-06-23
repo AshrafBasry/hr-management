@@ -7,6 +7,7 @@ const ErrorHandler = require('../middleware/error.middleware');
 // auth routes
 router.post('/register', ErrorHandler(AuthController.register));
 router.post('/login', ErrorHandler(AuthController.login));
+router.get('/logout', ErrorHandler(AuthController.logout));
 
 router.all('*',  (req, res) => res.status(400).json({ message: 'Bad Request.'}))
 

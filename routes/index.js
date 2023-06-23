@@ -13,6 +13,8 @@ router.get('/logout', AuthGuard, ErrorHandler(AuthController.logout));
 
 // employee routes
 router.post('/employee', AuthGuard, ErrorHandler(EmployeeController.createEmployee));
+router.get('/employees', AuthGuard, ErrorHandler(EmployeeController.getEmployees));
+router.get('/employee/:id', AuthGuard, ErrorHandler(EmployeeController.getEmployeeWithId));
 
 router.all('*',  (req, res) => res.status(400).json({ message: 'Bad Request.'}))
 

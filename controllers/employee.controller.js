@@ -37,3 +37,29 @@ exports.createEmployee = async (req, res) => {
     message: 'Employee created successfully.'
   });
 }
+
+exports.getEmployees = async (req, res) => {
+  const employees = await EmployeeModel.find({});
+
+  employees.map((employee) => {
+    if (employee.manager_id) {
+      const manager = employees.find((item) => item._id.toString() === employee.manager_id.toString());
+      employee.manager_name = manager.name;
+    }
+  });
+
+  return res.json({ data: employees });
+}
+
+exports.getEmployeeWithId = async (req, res) => {
+  const employee = await EmployeeModel.findById(req.params.id);  
+  if (!employee) {
+    return res.status(400).json({ message: 'Employee not found.' });
+  }
+
+  if (employee.manager_id) {
+    const manager = await EmployeeModel.findById(employee.manager_id);
+    employee.manager_name = manager.name;
+  }
+  return res.json({ data: employee });
+}

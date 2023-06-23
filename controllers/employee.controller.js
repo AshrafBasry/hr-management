@@ -84,3 +84,17 @@ exports.updateEmployee = async (req, res) => {
     return res.json({ data: employee });
   });
 }
+
+exports.deleteEmployee = async (req, res) => {
+  const employee = await EmployeeModel.findById(req.params.id);
+  if (!employee) {
+    return res.status(400).json({ message: 'Employee not found.' });
+  }
+
+  EmployeeModel.findByIdAndDelete(req.params.id, (err, employee) => {
+    if (err) {
+      return res.status(400).json({ message: 'Something went wrong.' });
+    }
+    return res.json({ message: 'Employee deleted successfully.' });
+  });
+}

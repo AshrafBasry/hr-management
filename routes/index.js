@@ -16,6 +16,7 @@ router.post('/employee', AuthGuard, ErrorHandler(EmployeeController.createEmploy
 router.get('/employees', AuthGuard, ErrorHandler(EmployeeController.getEmployees));
 router.get('/employee/:id', AuthGuard, ErrorHandler(EmployeeController.getEmployeeWithId));
 router.put('/employee/:id', AuthGuard, ErrorHandler(EmployeeController.updateEmployee));
+router.delete('/employee/:id', AuthGuard, ErrorHandler(EmployeeController.deleteEmployee));
 
 router.all('*',  (req, res) => res.status(400).json({ message: 'Bad Request.'}))
 

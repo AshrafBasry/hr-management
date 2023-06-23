@@ -63,3 +63,24 @@ exports.getEmployeeWithId = async (req, res) => {
   }
   return res.json({ data: employee });
 }
+
+exports.updateEmployee = async (req, res) => {
+  const employee = await EmployeeModel.findById(req.params.id);
+  if (!employee) {
+    return res.status(400).json({ message: 'Employee not found.' });
+  }
+
+  if (req.body.manager_id) {
+    const getManager = await EmployeeModel.findOne({ _id: req.body.manager_id });
+    if (!getManager) {
+      return res.status(400).json({ message: 'Manager not found.' });
+    }
+  }
+
+  EmployeeModel.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, employee) => {
+    if (err) {
+      return res.status(400).json({ message: 'Something went wrong.' });
+    }
+    return res.json({ data: employee });
+  });
+}

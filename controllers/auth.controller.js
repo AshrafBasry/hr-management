@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user.model');
+const jwtUtil = require('../utils/jwt');
 
 exports.register = async (req, res) => {
   const validateEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -30,4 +31,17 @@ exports.register = async (req, res) => {
     data: user,
     message: 'Admin registered successfully.'
   });
+}
+
+exports.login = async (req, res) => { 
+  const user = await User.findOne({ email: req.body.email }); 
+  if (user) {
+    const isMatched = await bcrypt.compare(req.body.password, user.password);
+    if (isMatched) {
+      const token = await jwtUtil.createToken({ _id: user._id });
+      return res.json({ user_token: token });
+    }
+  }
+
+  return res.status(400).json({ message: 'Unauthorized.' });
 }

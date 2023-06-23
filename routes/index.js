@@ -3,11 +3,13 @@ const router = express.Router();
 
 const AuthController = require('../controllers/auth.controller');
 const ErrorHandler = require('../middleware/error.middleware');
+const AuthGuard = require('../middleware/auth.middleware');
 
 // auth routes
 router.post('/register', ErrorHandler(AuthController.register));
 router.post('/login', ErrorHandler(AuthController.login));
-router.get('/logout', ErrorHandler(AuthController.logout));
+router.get('/logout', AuthGuard, ErrorHandler(AuthController.logout));
+
 
 router.all('*',  (req, res) => res.status(400).json({ message: 'Bad Request.'}))
 

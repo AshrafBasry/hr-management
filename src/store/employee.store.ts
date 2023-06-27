@@ -1,11 +1,16 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import api from "./api";
 import { Employee, FormattedEmployee } from "@/types";
+import { sortBy, capitalize } from "lodash-es";
 
 export const useEmployeeStore = defineStore("employee", () => {
   const employeesData = ref<Array<Employee>>([]);
   const searchTerm = ref<string>("");
+  const sortOptions = ref<{ sortBy: string; sortDirection: string }>({
+    sortBy: "name",
+    sortDirection: "asc",
+  });
 
   const pagination = ref<{ page: number; limit: number }>({
     page: 1,
@@ -85,6 +90,11 @@ export const useEmployeeStore = defineStore("employee", () => {
       });
   }
 
+  function sortEmployeesBy(options: { sortBy: string; sortDirection: string }) {
+    sortOptions.value = options;
+    pagination.value.page = 1;
+  }
+
   function searchEmployees(query: string) {
     searchTerm.value = query.trim();
     pagination.value.page = 1;
@@ -124,7 +134,17 @@ export const useEmployeeStore = defineStore("employee", () => {
       };
     });
 
-    const paginatedEmployees = mapEmployeeObject.slice(
+    let sortedEmployees = [];
+    if (sortOptions.value.sortDirection === "asc") {
+      sortedEmployees = sortBy(mapEmployeeObject, sortOptions.value.sortBy);
+    } else {
+      sortedEmployees = sortBy(
+        mapEmployeeObject,
+        sortOptions.value.sortBy
+      ).reverse();
+    }
+
+    const paginatedEmployees = sortedEmployees.slice(
       (pagination.value.page - 1) * pagination.value.limit,
       pagination.value.page * pagination.value.limit
     );
@@ -136,6 +156,7 @@ export const useEmployeeStore = defineStore("employee", () => {
     getEmployees,
     createNewEmployee,
     searchEmployees,
+    sortEmployeesBy,
     updateEmployee,
     setEmployeeToEdit,
     formattedEmployeesData,

@@ -18,6 +18,7 @@ export const useEmployeeStore = defineStore("employee", () => {
   });
 
   const editableEmployee = ref<Employee | null>(null);
+
   const modalState = ref<{
     hasError: boolean;
     errorMessage: string;
@@ -90,6 +91,21 @@ export const useEmployeeStore = defineStore("employee", () => {
       });
   }
 
+  function deleteEmployee(employeeId: string) {
+    const index = employeesData.value.findIndex(
+      (employee) => employee._id === employeeId
+    );
+
+    return api
+      .delete(`employee/${employeeId}`)
+      .then(() => {
+        employeesData.value.splice(index, 1);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   function sortEmployeesBy(options: { sortBy: string; sortDirection: string }) {
     sortOptions.value = options;
     pagination.value.page = 1;
@@ -159,6 +175,7 @@ export const useEmployeeStore = defineStore("employee", () => {
     sortEmployeesBy,
     updateEmployee,
     setEmployeeToEdit,
+    deleteEmployee,
     formattedEmployeesData,
     editableEmployee,
     totalEmployees,

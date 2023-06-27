@@ -80,18 +80,39 @@ exports.updateEmployee = async (req, res) => {
     return res.status(400).json({ message: 'Employee not found.' });
   }
 
-  if (req.body.manager_id) {
-    const getManager = await EmployeeModel.findOne({ _id: req.body.manager_id });
+  const validateEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!validateEmailRegex.test(req.body.email)) {
+    return res.status(400).json({ message: 'Invalid email.' });
+  }
+
+  if (req.body.manager) {
+    const getManager = await EmployeeModel.findOne({ _id: req.body.manager });
     if (!getManager) {
       return res.status(400).json({ message: 'Manager not found.' });
     }
+    if (getManager._id == req.params.id) {
+      return res.status(400).json({ message: 'Employee cannot be manager of itself.' });
+    }
   }
 
-  EmployeeModel.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, employee) => {
-    if (err) {
-      return res.status(400).json({ message: 'Something went wrong.' });
-    }
-    return res.json({ data: employee });
+  if (req.body.salary <= 0) {
+    return res.status(400).json({ message: 'Salary must be specified.' });
+  }
+
+  const checkJoinedAt = new Date(req.body.joined_at);
+  const checkCurrentDate = new Date();
+  if (checkJoinedAt > checkCurrentDate) {
+    return res.status(400).json({ message: 'Joined date must be less than current date.' });
+  }
+
+  EmployeeModel.findByIdAndUpdate(req.params.id, req.body, { new: true }).then((employee) => {
+    return res.json({
+      employee,
+      message: 'Employee updated successfully.'
+    });
+  }
+  ).catch((err) => {
+    return res.status(400).json({ message: 'Something went wrong.' });
   });
 }
 

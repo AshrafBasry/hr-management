@@ -23,6 +23,12 @@
 <script setup lang="ts">
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+import { useEmployeeStore } from "@/store/employee.store";
+
+const filterEmployees = (event: Event) => {
+  useEmployeeStore().searchEmployees((event.target as HTMLInputElement).value);
+};
 </script>
 
 <style lang="scss" scoped>

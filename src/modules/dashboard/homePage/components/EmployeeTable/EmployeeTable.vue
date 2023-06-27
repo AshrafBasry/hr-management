@@ -60,11 +60,14 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { ref } from "vue";
+import { useEmployeeStore } from "@/store/employee.store";
 
 import EmployeeTableBody from "../EmployeeTable/EmployeeTableBody.vue";
 import EmployeeTablePagination from "../EmployeeTable/EmployeeTablePagination.vue";
 import NewEmployeeModal from "../EmployeeDetailsModal.vue";
 import EmployeeTableEmpty from "../EmployeeTable/EmployeeTableEmpty.vue";
+
+const { formattedEmployeesData, modalState } = storeToRefs(useEmployeeStore());
 
 const tableFields = [
   {
@@ -98,6 +101,36 @@ const tableFields = [
     sortable: true,
   },
 ];
+
+const sort = (key: string) => {
+  const sortOptionsValue = sortOptions.value;
+
+  const field = tableFields.find((field) => field.key === key);
+  if (!field) return;
+
+  if (sortOptionsValue.sortBy !== key) {
+    sortOptionsValue.sortBy = key;
+    sortOptionsValue.sortDirection = "asc";
+  } else {
+    if (sortOptionsValue.sortDirection === "asc") {
+      sortOptionsValue.sortDirection = "desc";
+    } else {
+      sortOptionsValue.sortDirection = "asc";
+    }
+  }
+
+  useEmployeeStore().sortEmployeesBy(sortOptionsValue);
+};
+
+const editEmployee = (employeeId: string) => {
+  useEmployeeStore().setEmployeeToEdit(employeeId);
+  modalState.value.isOpened = true;
+  modalState.value.isNewEmployee = false;
+};
+
+const deleteEmployee = (employeeId: string) => {
+  useEmployeeStore().deleteEmployee(employeeId);
+};
 
 const sortOptions = ref({
   sortBy: "name",

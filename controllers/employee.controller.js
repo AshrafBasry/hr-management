@@ -122,10 +122,12 @@ exports.deleteEmployee = async (req, res) => {
     return res.status(400).json({ message: 'Employee not found.' });
   }
 
-  EmployeeModel.findByIdAndDelete(req.params.id, (err, employee) => {
-    if (err) {
-      return res.status(400).json({ message: 'Something went wrong.' });
-    }
-    return res.json({ message: 'Employee deleted successfully.' });
+  EmployeeModel.findByIdAndDelete(req.params.id).then(() => {
+    return res.json({
+      message: 'Employee deleted successfully.'
+    });
+  }
+  ).catch((err) => {
+    return res.status(400).json({ message: 'Something went wrong.' });
   });
 }

@@ -54,15 +54,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onUnmounted } from "vue";
+import { storeToRefs } from "pinia";
+import { useAuthStore } from "@/store/auth.store";
 
 const credentials = ref({
   email: "",
   password: "",
 });
 
-const submitLogin = () => {
+const { loginState } = storeToRefs(useAuthStore());
 
+onUnmounted(() => {
+  loginState.value.hasError = false;
+});
+
+const submitLogin = () => {
+  useAuthStore().loginUser(credentials.value);
 };
 </script>
 

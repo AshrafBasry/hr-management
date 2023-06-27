@@ -76,22 +76,32 @@
 
 <script setup lang="ts">
 import { defineProps, computed } from "vue";
+import { storeToRefs } from "pinia";
+
+import { useEmployeeStore } from "@/store/employee.store";
 
 const props = defineProps<{
   pageEntries: number;
 }>();
 
+const { pagination, totalEmployees } = storeToRefs(useEmployeeStore());
+
 const totalPages = computed(() => {
-  
+  return Math.ceil(totalEmployees.value / pagination.value.limit);
 });
 
 const startedEntry = computed(() => {
-  
+  return (pagination.value.page - 1) * pagination.value.limit + 1;
 });
 
 const lastEntry = computed(() => {
-
+  return startedEntry.value + props.pageEntries - 1;
 });
+
+const goToPage = (page: number) => {
+  if (page < 1 || page > totalPages.value) return;
+  pagination.value.page = page;
+};
 </script>
 
 <style lang="scss" scoped>

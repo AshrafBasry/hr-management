@@ -6,6 +6,11 @@ import { Employee } from "@/types";
 export const useEmployeeStore = defineStore("employee", () => {
   const employeesData = ref<Array<Employee>>([]);
 
+  const pagination = ref<{ page: number; limit: number }>({
+    page: 1,
+    limit: 10,
+  });
+
   const dashboardState = ref<{
     isLoading: boolean;
     hasError: boolean;
@@ -34,5 +39,7 @@ export const useEmployeeStore = defineStore("employee", () => {
   return {
     getEmployees,
     dashboardState,
+    modalState,
+    pagination,
   };
 });

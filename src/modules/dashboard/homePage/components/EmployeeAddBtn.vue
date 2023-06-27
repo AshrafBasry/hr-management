@@ -20,8 +20,14 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import EmployeeDetailsModal from "./EmployeeDetailsModal.vue";
 
-function openAddEmployeeModal() {
+import { storeToRefs } from "pinia";
+import { useEmployeeStore } from "@/store/employee.store";
 
+const { modalState } = storeToRefs(useEmployeeStore());
+
+function openAddEmployeeModal() {
+  modalState.value.isOpened = true;
+  modalState.value.isNewEmployee = true;
 }
 </script>
 

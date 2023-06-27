@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import api from "./api";
-import { Employee } from "@/types";
+import { Employee, FormattedEmployee } from "@/types";
 
 export const useEmployeeStore = defineStore("employee", () => {
   const employeesData = ref<Array<Employee>>([]);
@@ -10,6 +10,17 @@ export const useEmployeeStore = defineStore("employee", () => {
   const pagination = ref<{ page: number; limit: number }>({
     page: 1,
     limit: 10,
+  });
+
+  const modalState = ref<{
+    hasError: boolean;
+    errorMessage: string;
+    isOpened: boolean;
+    isNewEmployee?: boolean;
+  }>({
+    isOpened: false,
+    hasError: false,
+    errorMessage: "",
   });
 
   const dashboardState = ref<{
@@ -34,6 +45,19 @@ export const useEmployeeStore = defineStore("employee", () => {
       })
       .finally(() => {
         dashboardState.value.isLoading = false;
+      });
+  }
+
+  function createNewEmployee(employee: Employee) {
+    return api
+      .post("employee", employee)
+      .then((response) => {
+        employeesData.value.push(response.data.employee);
+        modalState.value.isOpened = false;
+      })
+      .catch((error) => {
+        modalState.value.hasError = true;
+        modalState.value.errorMessage = error.response.data.message;
       });
   }
 
@@ -86,6 +110,7 @@ export const useEmployeeStore = defineStore("employee", () => {
 
   return {
     getEmployees,
+    createNewEmployee,
     searchEmployees,
     formattedEmployeesData,
     totalEmployees,

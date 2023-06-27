@@ -36,7 +36,7 @@ const EmployeeSchema = new Schema(
       type: String,
       required: true
     },
-    manager_id: {
+    manager: {
       type: String,
       required: false
     }

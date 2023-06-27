@@ -2,20 +2,30 @@ const EmployeeModel = require('../models/employee.modal');
 
 exports.createEmployee = async (req, res) => {
   const validateEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  console.log(req.body);
   if (!validateEmailRegex.test(req.body.email)) {
     return res.status(400).json({ message: 'Invalid email.' });
   }
   
-  const getManager = await EmployeeModel.findOne({ _id: req.body.manager_id });
-  if (!getManager) {
-    return res.status(400).json({ message: 'Manager not found.' });
+  const getEmployee = await EmployeeModel.findOne({ email: req.body.email });
+  if (getEmployee) {
+    return res.status(400).json({ message: 'Employee already exists.' });
+  }
+  
+  if (req.body.manager) {
+    const getManager = await EmployeeModel.findOne({ _id: req.body.manager });
+    if (!getManager) {
+      return res.status(400).json({ message: 'Manager not found.' });
+    }
+  }
+
+  if (req.body.salary <= 0) {
+    return res.status(400).json({ message: 'Salary must be specified.' });
   }
 
   const checkJoinedAt = new Date(req.body.joined_at);
   const checkCurrentDate = new Date();
   if (checkJoinedAt > checkCurrentDate) {
-    return res.status(400).json({ message: 'Joined at must be less than current date.' });
+    return res.status(400).json({ message: 'Joined date must be less than current date.' });
   }
 
   const employeeData = {
@@ -25,15 +35,15 @@ exports.createEmployee = async (req, res) => {
     phone: req.body.phone,
     address: req.body.address,
     joined_at: req.body.joined_at,
-    salary: req.body.salary,
+    salary: Number(req.body.salary),
     department: req.body.department,
-    manager_id: req.body.manager_id
+    manager: req.body.manager
   }
 
   const employee = await EmployeeModel.create(employeeData);
 
   return res.json({
-    data: employee,
+    employee,
     message: 'Employee created successfully.'
   });
 }

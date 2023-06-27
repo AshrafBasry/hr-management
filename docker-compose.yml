@@ -1,13 +1,19 @@
 version: "3"
 services:
-  node-app:
+  vue-app:
     build: 
       context: .
-      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - node-app
+  node-app:
+    build: 
+      context: ./api
     ports:
       - "3000:3000"
     env_file:
-      - ./.env
+      - ./api/.env
     depends_on:
       - mongo
   mongo:
@@ -15,9 +21,6 @@ services:
     restart: always
     volumes:
       - mongo-db:/data/db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
   nginx:
     image: nginx:stable-alpine
     ports:
@@ -26,6 +29,7 @@ services:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - node-app
+      - vue-app
 
 
 volumes:

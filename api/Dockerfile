@@ -1,14 +1,11 @@
 FROM node:16-alpine
 
-WORKDIR /server
+WORKDIR /app
 
-COPY package.json ./
+COPY package.json ./api/
 
-ARG NODE_ENV
-RUN if [ "$NODE_ENV" = "development" ]; \
-    then yarn; \
-    else yarn --only=production; \
-    fi
+RUN cd api && yarn
 
-COPY . .
-CMD ["yarn", "dev"]
+COPY . ./api/
+
+CMD ["node", "api/index.js"]

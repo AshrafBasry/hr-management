@@ -27,7 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api', indexRouter);
 
 app.listen(process.env.SERVER_PORT, function () {
-  console.log("Server is running on localhost3000");
+  console.log("Server is running on Port: " + process.env.SERVER_PORT);
 });
 
 module.exports = app;

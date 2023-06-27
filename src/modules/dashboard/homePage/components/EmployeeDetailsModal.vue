@@ -221,6 +221,54 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onUnmounted } from "vue";
+import { useEmployeeStore } from "@/store/employee.store";
+import { storeToRefs } from "pinia";
+
+const { editableEmployee, formattedEmployeesData, modalState } = storeToRefs(
+  useEmployeeStore()
+);
+const newEmployee = ref(modalState.value.isNewEmployee);
+
+const employee = ref({
+  name: newEmployee.value ? "" : editableEmployee.value?.name || "",
+  title: newEmployee.value ? "" : editableEmployee.value?.title || "",
+  email: newEmployee.value ? "" : editableEmployee.value?.email || "",
+  phone: newEmployee.value ? "" : editableEmployee.value?.phone || "",
+  address: newEmployee.value ? "" : editableEmployee.value?.address || "",
+  joined_at: newEmployee.value
+    ? ""
+    : editableEmployee.value?.joined_at
+    ? new Date(editableEmployee.value?.joined_at).toISOString().substr(0, 10)
+    : "",
+  salary: newEmployee.value ? 0 : editableEmployee.value?.salary || 0,
+  department: newEmployee.value ? "" : editableEmployee.value?.department || "",
+  manager: newEmployee.value ? "" : editableEmployee.value?.manager || "",
+});
+
+onUnmounted(() => {
+  resetModalState();
+});
+
+const saveEmployee = () => {
+  resetModalState();
+  if (newEmployee.value) {
+    useEmployeeStore().createNewEmployee(employee.value);
+  } else {
+    useEmployeeStore().updateEmployee({
+      ...employee.value,
+      _id: editableEmployee.value?._id,
+    });
+  }
+};
+
+const resetModalState = () => {
+  modalState.value = {
+    ...modalState.value,
+    hasError: false,
+    errorMessage: "",
+  };
+};
 </script>
 
 <style scoped lang="scss">

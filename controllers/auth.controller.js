@@ -44,7 +44,7 @@ exports.login = async (req, res) => {
     }
   }
 
-  return res.status(400).json({ message: 'Unauthorized.' });
+  return res.status(400).json({ message: 'Your email and/or password are incorrect.' });
 }
 
 exports.logout = async (req, res) => {    

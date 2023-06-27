@@ -50,15 +50,7 @@ exports.createEmployee = async (req, res) => {
 
 exports.getEmployees = async (req, res) => {
   const employees = await EmployeeModel.find({});
-
-  employees.map((employee) => {
-    if (employee.manager_id) {
-      const manager = employees.find((item) => item._id.toString() === employee.manager_id.toString());
-      employee.manager_name = manager.name;
-    }
-  });
-
-  return res.json({ data: employees });
+  return res.json({ employees });
 }
 
 exports.getEmployeeWithId = async (req, res) => {

@@ -12,6 +12,7 @@ export const useEmployeeStore = defineStore("employee", () => {
     limit: 10,
   });
 
+  const editableEmployee = ref<Employee | null>(null);
   const modalState = ref<{
     hasError: boolean;
     errorMessage: string;
@@ -54,6 +55,29 @@ export const useEmployeeStore = defineStore("employee", () => {
       .then((response) => {
         employeesData.value.push(response.data.employee);
         modalState.value.isOpened = false;
+      })
+      .catch((error) => {
+        modalState.value.hasError = true;
+        modalState.value.errorMessage = error.response.data.message;
+      });
+  }
+
+  function setEmployeeToEdit(employeeId: string) {
+    const employee = employeesData.value.find(
+      (employee) => employee._id === employeeId
+    );
+    editableEmployee.value = employee ? employee : null;
+  }
+
+  function updateEmployee(employee: Employee) {
+    return api
+      .put(`employee/${employee._id}`, employee)
+      .then((response) => {
+        modalState.value.isOpened = false;
+        const index = employeesData.value.findIndex(
+          (employee) => employee._id === response.data.employee._id
+        );
+        employeesData.value[index] = response.data.employee;
       })
       .catch((error) => {
         modalState.value.hasError = true;
@@ -112,7 +136,10 @@ export const useEmployeeStore = defineStore("employee", () => {
     getEmployees,
     createNewEmployee,
     searchEmployees,
+    updateEmployee,
+    setEmployeeToEdit,
     formattedEmployeesData,
+    editableEmployee,
     totalEmployees,
     dashboardState,
     modalState,
